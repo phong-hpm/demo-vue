@@ -3,5 +3,9 @@ import { RouterView } from 'vue-router';
 </script>
 
 <template>
-  <RouterView />
+  <div class="relative flex">
+    <RouterView name="leftSidebar" class="shrink-0" />
+    <div class="grow pr-14"><RouterView /></div>
+    <RouterView name="rightSidebar" class="shrink-0" />
+  </div>
 </template>

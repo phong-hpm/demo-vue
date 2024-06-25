@@ -4,4 +4,10 @@
 
 #app {
   min-height: 100vh;
+  background: #f0f2f5;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d5d5db transparent;
 }
