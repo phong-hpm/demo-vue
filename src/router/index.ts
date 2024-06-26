@@ -22,8 +22,8 @@ const router = createRouter({
       name: 'users',
       components: {
         default: () => import('@/views/Users/Users.vue'),
-        leftSidebar: () => import('@/mixins/LeftSidebar.vue'),
-        rightSidebar: () => import('@/mixins/RightSidebar.vue'),
+        leftSidebar: () => import('@/features/LeftSidebar.vue'),
+        rightSidebar: () => import('@/features/RightSidebar.vue'),
       },
     },
   ],

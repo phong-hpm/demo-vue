@@ -6,10 +6,11 @@ interface ModalProps {
   title: string;
   footer?: VNode;
   size?: 'small' | 'large';
+  onSubmit?: () => void;
   onClose: () => void;
 }
 
-const { size = 'small', title, onClose } = defineProps<ModalProps>();
+const { size = 'small', title, onSubmit, onClose } = defineProps<ModalProps>();
 
 const ready = ref(false);
 const styleObject = reactive({ width: '500px' });
@@ -29,10 +30,12 @@ if (size === 'large') styleObject.width = '800px';
       :class="{ '!opacity-40': ready }"
       @click="onClose"
     />
-    <div
+    <component
       class="fixed right-0 top-0 z-30 translate-x-full transition-all"
+      :is="onSubmit ? 'form' : 'div'"
       :class="{ '!translate-x-0': ready }"
       :style="styleObject"
+      @submit="onSubmit"
     >
       <div class="relative flex h-screen w-full flex-col overflow-hidden bg-white shadow">
         <div class="flex w-full shrink-0 justify-between gap-4 border-b border-gray-200 px-8 py-6">
@@ -48,7 +51,7 @@ if (size === 'large') styleObject.width = '800px';
           <slot name="footer" />
         </div>
       </div>
-    </div>
+    </component>
   </Teleport>
 </template>
 
