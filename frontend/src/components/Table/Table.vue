@@ -10,8 +10,10 @@ import Spinner from '@/components/Spinner.vue';
 
 interface TableProps<T> {
   loading?: boolean;
+  loadingMore?: boolean;
   data: T[];
   columns: AccessorKeyColumnDef<T, string>[];
+  onLoadMore?: () => void;
 }
 
 const props = defineProps<TableProps<any>>();
@@ -23,11 +25,19 @@ const table = useVueTable({
   columns: props.columns || [],
   getCoreRowModel: getCoreRowModel(),
 });
+
+const handleScroll = (event: Event) => {
+  const target = event.target as HTMLElement;
+  if (props.loadingMore || target.scrollTop + target.offsetHeight < target.scrollHeight) return;
+  props.onLoadMore?.();
+};
 </script>
 
 <template>
-  <div class="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white p-4">
-    <div class="max-h-full w-full overflow-auto">
+  <div
+    class="relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white p-4"
+  >
+    <div class="max-h-full w-full overflow-auto" @scroll="handleScroll">
       <table class="w-full">
         <thead class="text-xs uppercase text-gray-300">
           <tr
@@ -72,6 +82,14 @@ const table = useVueTable({
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <div v-if="loadingMore" class="absolute bottom-4 left-1/2 -translate-x-1/2">
+      <div
+        class="flex h-[30px] w-[180px] justify-center rounded-t-md border-gray-900 bg-gray-900 px-4 py-2 text-xs"
+      >
+        <Spinner :show="true" class="size-4" />
+      </div>
     </div>
   </div>
 </template>

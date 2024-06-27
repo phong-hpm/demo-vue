@@ -14,7 +14,7 @@ interface UsersTableProps {
 }
 
 const { paginationData } = defineProps<UsersTableProps>();
-const { loading, data: userList } = paginationData || {};
+const { loading, loadingMore, data: userList, onLoadMore } = paginationData || {};
 
 const columnHelper = createColumnHelper<TUser>();
 
@@ -48,5 +48,12 @@ const columns = [
 </script>
 
 <template>
-  <Table class="max-h-[calc(100vh-130px)]" :loading="loading" :data="userList" :columns="columns" />
+  <Table
+    class="max-h-[calc(100vh-130px)]"
+    :loading="loading"
+    :loadingMore="loadingMore"
+    :data="userList"
+    :columns="columns"
+    @loadMore="onLoadMore"
+  />
 </template>
