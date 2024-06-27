@@ -40,6 +40,7 @@ const table = useVueTable({
               :key="header.id"
               :colSpan="header.colSpan"
               class="sticky top-0 z-10 bg-white p-3 text-left font-bold text-[#9ba6ae]"
+              :style="{ width: header.getSize() ? `${header.getSize()}px` : '' }"
             >
               <FlexRender
                 v-if="!header.isPlaceholder"

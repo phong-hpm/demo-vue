@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { h } from 'vue';
 import { createColumnHelper } from '@tanstack/vue-table';
 
 import type { TUser } from '@/types/User.vue';
+import type { TPaginationData } from '@/hooks/usePaginationData';
 
 import Table from '@/components/Table/Table.vue';
-import type { TPaginationData } from '@/hooks/usePaginationData';
+
+import ActionCell from './UsersTableActionCell.vue';
 
 interface UsersTableProps {
   paginationData: TPaginationData<TUser>;
@@ -19,18 +22,27 @@ const columns = [
   columnHelper.accessor('email', {
     header: 'Email',
     cell: (data) => data.getValue(),
+    size: 1000,
   }),
   columnHelper.accessor('firstName', {
     header: 'Name',
     cell: (data) => `${data.row.original.firstName} ${data.row.original.lastName}`,
+    size: 1000,
   }),
   columnHelper.accessor('phoneNumber', {
     header: 'Phone',
     cell: (data) => data.getValue(),
+    size: 500,
   }),
   columnHelper.accessor('id', {
     header: '',
-    cell: (data) => data.getValue(),
+    cell: (data) =>
+      h(ActionCell, {
+        user: data.row.original,
+        onUpdate: paginationData.onUpdate,
+        onDelete: paginationData.onDelete,
+      }),
+    size: 100,
   }),
 ];
 </script>

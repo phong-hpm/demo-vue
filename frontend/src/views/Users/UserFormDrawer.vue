@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useToast } from 'vue-toast-notification';
 import { useForm } from 'vee-validate';
 import * as Yup from 'yup';
 import { faker } from '@faker-js/faker';
@@ -26,14 +27,23 @@ const validationSchema = Yup.object().shape({
 
 interface AddUserFormProps {
   open: boolean;
-  onAdd: (entity: TUser) => void;
+  user?: TUser;
+  onUpdate: (entity: TUser) => void;
   onClose: () => void;
 }
 
-const { onAdd, onClose } = defineProps<AddUserFormProps>();
+const { user, onUpdate, onClose } = defineProps<AddUserFormProps>();
+
+const toast = useToast();
 
 const { setValues, handleSubmit } = useForm<FormData>({
   validationSchema,
+  initialValues: {
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    email: user?.email || '',
+    phoneNumber: user?.phoneNumber,
+  },
 });
 
 const loading = ref(false);
@@ -47,14 +57,19 @@ const handleRandom = () => {
   });
 };
 
-const onSubmit = handleSubmit(async (values) => {
+const onSubmit = handleSubmit(async (data) => {
   try {
     loading.value = true;
-    const response = await axiosInstance.post<TUser>('users', values);
-    onAdd(response.data);
+    const response = await axiosInstance<TUser>({
+      method: user ? 'put' : 'post',
+      url: user ? `users/${user.id}` : 'users',
+      data,
+    });
+    toast.error(user ? 'Edit successfully' : 'Add successfully');
+    onUpdate(response.data);
     onClose?.();
-    // eslint-disable-next-line no-empty
   } catch {
+    toast.error(user ? 'Edit failed' : 'Add failed');
   } finally {
     loading.value = false;
   }
@@ -62,7 +77,12 @@ const onSubmit = handleSubmit(async (values) => {
 </script>
 
 <template>
-  <Drawer v-if="open" title="New user" @submit="onSubmit" @close="onClose">
+  <Drawer
+    v-if="open"
+    :title="user ? 'Update user' : 'New user'"
+    @submit="onSubmit"
+    @close="onClose"
+  >
     <div class="flex flex-col gap-6">
       <div class="grid grid-cols-2 gap-6">
         <TextField required="true" label="First name" name="firstName" />

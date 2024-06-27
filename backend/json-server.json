@@ -4,7 +4,7 @@
   "routes": "routes.json",
   "middlewares": ["./middleware.js"],
   "readOnly": false,
-  "delay": 0,
+  "delay": 1000,
   "static": "./public",
   "watch": ["db.json"]
 }
