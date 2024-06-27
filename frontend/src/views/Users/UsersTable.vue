@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
 import { createColumnHelper } from '@tanstack/vue-table';
 
 import type { TUser } from '@/types/User.vue';
-import axiosInstance from '@/utils/axios';
 
 import Table from '@/components/Table/Table.vue';
+import type { TPaginationData } from '@/hooks/usePaginationData';
+
+interface UsersTableProps {
+  paginationData: TPaginationData<TUser>;
+}
+
+const { paginationData } = defineProps<UsersTableProps>();
+const { loading, data: userList } = paginationData || {};
 
 const columnHelper = createColumnHelper<TUser>();
 
@@ -22,26 +28,13 @@ const columns = [
     header: 'Phone',
     cell: (data) => data.getValue(),
   }),
+  columnHelper.accessor('id', {
+    header: '',
+    cell: (data) => data.getValue(),
+  }),
 ];
-
-const userList = ref<TUser[]>([]);
-
-const fetchUserList = async () => {
-  try {
-    const response = await axiosInstance.get<TUser[]>('users');
-    userList.value = response.data;
-  } catch {
-    userList.value = [];
-  }
-};
-
-onMounted(() => {
-  fetchUserList();
-});
 </script>
 
 <template>
-  <div class="p-4">
-    <Table class="max-h-[calc(100vh-130px)]" :data="userList" :columns="columns" />
-  </div>
+  <Table class="max-h-[calc(100vh-130px)]" :loading="loading" :data="userList" :columns="columns" />
 </template>

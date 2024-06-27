@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useForm } from 'vee-validate';
 import * as Yup from 'yup';
+import { faker } from '@faker-js/faker';
+
+import type { TUser } from '@/types/User.vue';
+import axiosInstance from '@/utils/axios';
 
 import Drawer from '@/components/Drawer/Drawer.vue';
 import Button from '@/components/Button.vue';
@@ -15,23 +20,44 @@ type FormData = {
 
 const validationSchema = Yup.object().shape({
   firstName: Yup.string().required('is_required'),
-  lastName: Yup.string().email().required('is_required'),
-  email: Yup.string().email().required('is_required'),
+  lastName: Yup.string().required('is_required'),
+  email: Yup.string().email('invalid_email').required('is_required'),
 });
 
 interface AddUserFormProps {
   open: boolean;
+  onAdd: (entity: TUser) => void;
   onClose: () => void;
 }
 
-const { onClose } = defineProps<AddUserFormProps>();
+const { onAdd, onClose } = defineProps<AddUserFormProps>();
 
-const { handleSubmit } = useForm<FormData>({
+const { setValues, handleSubmit } = useForm<FormData>({
   validationSchema,
 });
 
+const loading = ref(false);
+
+const handleRandom = () => {
+  setValues({
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+    email: faker.internet.email(),
+    phoneNumber: faker.phone.number(),
+  });
+};
+
 const onSubmit = handleSubmit(async (values) => {
-  console.log(values);
+  try {
+    loading.value = true;
+    const response = await axiosInstance.post<TUser>('users', values);
+    onAdd(response.data);
+    onClose?.();
+    // eslint-disable-next-line no-empty
+  } catch {
+  } finally {
+    loading.value = false;
+  }
 });
 </script>
 
@@ -46,7 +72,12 @@ const onSubmit = handleSubmit(async (values) => {
       <TextField label="Phone" name="phoneNumber" />
     </div>
     <template v-slot:footer>
-      <Button type="submit">Submit</Button>
+      <div class="flex w-full justify-between">
+        <Button :disabled="loading" color="transparent" type="button" @click="handleRandom">
+          Random
+        </Button>
+        <Button :loading="loading" type="submit">Submit</Button>
+      </div>
     </template>
   </Drawer>
 </template>

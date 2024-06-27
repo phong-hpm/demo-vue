@@ -6,7 +6,10 @@ import {
   type AccessorKeyColumnDef,
 } from '@tanstack/vue-table';
 
+import Spinner from '@/components/Spinner.vue';
+
 interface TableProps<T> {
+  loading?: boolean;
   data: T[];
   columns: AccessorKeyColumnDef<T, string>[];
 }
@@ -46,7 +49,7 @@ const table = useVueTable({
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody v-if="!loading">
           <tr
             v-for="row in table.getRowModel().rows"
             :key="row.id"
@@ -54,6 +57,16 @@ const table = useVueTable({
           >
             <td v-for="cell in row.getVisibleCells()" :key="cell.id" class="p-3">
               <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+            </td>
+          </tr>
+        </tbody>
+
+        <tbody v-if="loading">
+          <tr>
+            <td :colSpan="table.getAllColumns().length">
+              <div class="flex h-16 w-full items-center justify-center py-16">
+                <Spinner :show="true" class="h-10 w-10 !text-gray-900" />
+              </div>
             </td>
           </tr>
         </tbody>
