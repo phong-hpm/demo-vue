@@ -5,7 +5,7 @@ import { RouterView } from 'vue-router';
 <template>
   <div class="relative flex">
     <RouterView name="leftSidebar" class="shrink-0" />
-    <div class="grow pr-14"><RouterView /></div>
+    <div class="grow p-6 mr-14"><RouterView /></div>
     <RouterView name="rightSidebar" class="shrink-0" />
   </div>
 </template>

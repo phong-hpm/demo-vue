@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<ButtonProps>(), {
 
 <template>
   <button
-    class="flex items-center gap-2 rounded-lg transition-all"
+    class="flex items-center gap-2 text-nowrap rounded-lg transition-all"
     :class="[
       icon
         ? [

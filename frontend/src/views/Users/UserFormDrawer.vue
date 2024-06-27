@@ -65,7 +65,7 @@ const onSubmit = handleSubmit(async (data) => {
       url: user ? `users/${user.id}` : 'users',
       data,
     });
-    toast.error(user ? 'Edit successfully' : 'Add successfully');
+    toast.success(user ? 'Edit successfully' : 'Add successfully');
     onUpdate(response.data);
     onClose?.();
   } catch {

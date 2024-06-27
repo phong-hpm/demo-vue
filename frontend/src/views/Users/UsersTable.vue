@@ -35,7 +35,7 @@ const columns = [
     size: 500,
   }),
   columnHelper.accessor('id', {
-    header: '',
+    header: 'Actions',
     cell: (data) =>
       h(ActionCell, {
         user: data.row.original,
@@ -49,7 +49,7 @@ const columns = [
 
 <template>
   <Table
-    class="max-h-[calc(100vh-130px)]"
+    class="max-h-[calc(100vh-120px)]"
     :loading="loading"
     :loadingMore="loadingMore"
     :data="userList"
