@@ -6,27 +6,27 @@ import dotEnv from 'dotenv';
 
 dotEnv.config();
 
-const server = jsonServer.create({});
+const server = jsonServer.create();
 const router = jsonServer.router('db.json');
 const middlewares = jsonServer.defaults({});
 
-const AUTH_SECRET_KEY = process.env.AUTH_SECRET_KEY;
-const AUTH_EXPIRED_IN = process.env.AUTH_EXPIRED_IN;
+const AUTH_SECRET_KEY = process.env.AUTH_SECRET_KEY || '';
+const AUTH_EXPIRED_IN = process.env.AUTH_EXPIRED_IN || '';
 
 // Create a token from a payload
-function createToken(payload) {
-  return jsonwebtoken.sign(payload, AUTH_SECRET_KEY, { expiresIn: AUTH_EXPIRED_IN });
+function createToken({ email, password }: { email: string; password: string }) {
+  return jsonwebtoken.sign({ username: email, password }, AUTH_SECRET_KEY, { expiresIn: AUTH_EXPIRED_IN });
 }
 
 // Verify the token
-function verifyToken(token) {
+function verifyToken(token: string) {
   return jsonwebtoken.verify(token, AUTH_SECRET_KEY, (err, decode) => (decode !== undefined ? decode : err));
 }
 
 // Check if the user exists in database
-function isAuthenticated({ email, password }) {
-  const userdb = router.db.get('users').value();
-  const user = userdb.find((user) => user.email === email && user.password === password);
+function isAuthenticated({ email, password }: { email: string; password: string }) {
+  const userdb = (router.db.get('users') as any).value();
+  const user = userdb.find((user: any) => user.email === email && user.password === password);
   return !!user;
 }
 
@@ -48,7 +48,7 @@ server.post('/auth/login', (req, res) => {
     res.status(status).json({ status, message });
     return;
   }
-  const access_token = createToken({ username: email, password });
+  const access_token = createToken({ email, password });
   res.status(200).json({ access_token });
 });
 
